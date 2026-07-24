@@ -28,8 +28,8 @@ jobs:
 
       - name: Build binary Linux
         working-directory: backend
-        # CGO_ENABLED=0 → binary tĩnh, chạy được trên mọi Linux
-        # GOOS/GOARCH → build cho đúng hệ điều hành + CPU của VPS
+        # CGO_ENABLED=0 -> binary tĩnh, chạy được trên mọi Linux
+        # GOOS/GOARCH -> build cho đúng hệ điều hành + CPU của VPS
         run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 
       # ---------- 2. Build frontend React ----------
@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           port: ${{ secrets.VPS_PORT }}
           username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           source: "backend/server,frontend/dist"
           target: /tmp/goshop-deploy
 
@@ -63,9 +63,12 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           port: ${{ secrets.VPS_PORT }}
           username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
+            # Đảm bảo thư mục ứng dụng đã tồn tại
+            mkdir -p /var/www/go-shop
+
             # Binary: dùng mv (atomic) để tránh lỗi "text file busy" khi app đang chạy
             mv /tmp/goshop-deploy/backend/server /var/www/go-shop/server.new
             chmod +x /var/www/go-shop/server.new
