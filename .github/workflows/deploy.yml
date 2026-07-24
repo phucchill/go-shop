@@ -85,3 +85,25 @@ jobs:
             # Kiểm tra sống sau deploy — fail ở đây thì workflow đỏ
             sleep 2
             curl -fs http://127.0.0.1:8080/api/health
+
+            # ---------- 5. Thông báo Telegram ----------
+      - name: Telegram — deploy thành công
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d parse_mode=Markdown \
+            --data-urlencode text="✅ *go-shop deploy THÀNH CÔNG*
+          👤 Người đẩy: ${{ github.actor }}
+          📝 Commit: ${{ github.event.head_commit.message }}
+          🌐 Trải nghiệm tại: http://phuc.food"
+
+      - name: Telegram — deploy thất bại
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            --data-urlencode text="❌ go-shop deploy THẤT BẠI!
+          👤 Người đẩy: ${{ github.actor }}
+          📝 Commit: ${{ github.event.head_commit.message }}
+          🔍 Xem chi tiết lỗi: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
