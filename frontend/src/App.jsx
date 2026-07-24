@@ -82,7 +82,7 @@ function App() {
 
   return (
     <div className="container">
-      <h1>🛒 Go Shop — Quản lý sản phẩm</h1>
+      <h1>  Go Shop v2</h1>
 
       {/* ---- FORM THÊM / SỬA ---- */}
       <form className="card" onSubmit={handleSubmit}>
